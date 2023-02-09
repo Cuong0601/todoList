@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./Container.css";
 function Container() {
   const [todo, setTodo] = useState("");
-  const [todoList, setTodoList] = useState([1, 2, 3, 4]);
-  const [showSave, setShowSave] = useState(false);
-  const [showCancel, setShowCancel] = useState(false);
-  const [showEdit, setShowEdit] = useState(true);
-  const [showDel, setShowDel] = useState(true);
-  const [showP, setShowP] = useState(true);
+  const [todoList, setTodoList] = useState(["a", "b", "c", "d"]);
+
+  const getEdit = useRef([]);
+  const getDel = useRef([]);
+  const getSave = useRef([]);
+  const getSaveInput = useRef([]);
+  const getCancel = useRef([]);
+  const getNameWork = useRef([]);
   const handleValue = (event) => {
     setTodo(event.target.value);
   };
+
   const handleAdd = () => {
     if (todo.length === 0) {
       alert("Khong duoc de trong o nay");
@@ -18,8 +21,9 @@ function Container() {
       setTodoList((prevTodo) => [...prevTodo, todo]);
     }
   };
-  const handleDel = (x) => {
-    console.log(x);
+
+  const handleDel = (x, index) => {
+    console.log(x, index);
     setTodoList((prevTodo) => {
       const newArr = prevTodo.filter(
         (prevTodoElement) => prevTodoElement !== x
@@ -27,20 +31,32 @@ function Container() {
       return newArr;
     });
   };
-  const handleEdit = () => {
-    setShowSave(true);
-    setShowCancel(true);
-    setShowP(false);
-    setShowEdit(false);
-    setShowDel(false);
+
+  const handleEdit = (index) => {
+    console.log(index);
+    console.log(getEdit.current[index]);
+    getNameWork.current[index].style.display = "none";
+    getEdit.current[index].style.display = "none";
+    getDel.current[index].style.display = "none";
+    getSaveInput.current[index].style.display = "block";
+    getSave.current[index].style.display = "block";
+    getCancel.current[index].style.display = "block";
   };
-  const handleCancel = () => {
-    setShowSave(false);
-    setShowCancel(false);
-    setShowP(true);
-    setShowEdit(true);
-    setShowDel(true);
+
+  const handleSave = (index) => {
+    console.log(index);
   };
+
+  const handleCancel = (index) => {
+    console.log(index);
+    getNameWork.current[index].style.display = "block";
+    getEdit.current[index].style.display = "block";
+    getDel.current[index].style.display = "block";
+    getSaveInput.current[index].style.display = "none";
+    getSave.current[index].style.display = "none";
+    getCancel.current[index].style.display = "none";
+  };
+
   return (
     <div>
       <div className="inputTodo">
@@ -52,34 +68,53 @@ function Container() {
       <ul className="displayTodo">
         {todoList.map((x, index) => (
           <li key={index}>
-            <p style={showP ? { display: "block" } : { display: "none" }}>
+            <p
+              ref={(element) => {
+                getNameWork.current[index] = element;
+              }}
+            >
               {x}
             </p>
-            <input type="text" />
+            <input
+              className="saveInput"
+              ref={(element) => {
+                getSaveInput.current[index] = element;
+              }}
+              type="text"
+            />
             <button
-              style={showEdit ? { display: "block" } : { display: "none" }}
+              ref={(element) => {
+                getEdit.current[index] = element;
+              }}
               className="btn btn-edit"
-              onClick={handleEdit}
+              onClick={() => handleEdit(index)}
             >
               Edit
             </button>
             <button
-              style={showDel ? { display: "block" } : { display: "none" }}
+              ref={(element) => {
+                getDel.current[index] = element;
+              }}
               className="btn btn-delete"
-              onClick={() => handleDel(x)}
+              onClick={() => handleDel(x, index)}
             >
               Delete
             </button>
             <button
-              style={showSave ? { display: "block" } : { display: "none" }}
+              ref={(element) => {
+                getSave.current[index] = element;
+              }}
               className="btn btn-save"
+              onClick={() => handleSave(index)}
             >
               Save
             </button>
             <button
-              style={showCancel ? { display: "block" } : { display: "none" }}
+              ref={(element) => {
+                getCancel.current[index] = element;
+              }}
               className="btn btn-cancel"
-              onClick={handleCancel}
+              onClick={() => handleCancel(index)}
             >
               Cancel
             </button>
